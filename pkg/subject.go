@@ -41,7 +41,7 @@ type MyJsonName struct {
 	} `json:"ticket"`
 }
 
-func GetTicketSubject(text string) (string, int, int) {
+func GetTicketSubject(text string) (string, int, int, int, string) {
 
 	url := "https://forgerock.zendesk.com/api/v2/tickets/" + text + ".json"
 
@@ -66,6 +66,7 @@ func GetTicketSubject(text string) (string, int, int) {
 	ticketSubject := myTicket.Ticket.Subject
 	orgID := myTicket.Ticket.OrganizationID
 	userID := myTicket.Ticket.AssigneeID
-
-	return ticketSubject, orgID, userID
+	groupID := myTicket.Ticket.GroupID
+	status := myTicket.Ticket.Status
+	return ticketSubject, orgID, userID, groupID, status
 }

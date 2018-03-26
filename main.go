@@ -22,16 +22,17 @@ func getTicketHandler(w http.ResponseWriter, r *http.Request) {
 
 	text := strings.Replace(r.FormValue("text"), "\r", "", -1)
 
-	subject, orgID, userID := pkg.GetTicketSubject(text)
+	subject, orgID, userID, groupID, status := pkg.GetTicketSubject(text)
 	orgName := pkg.GetOrganization(orgID)
 	assignee := pkg.GetAssignee(userID)
+	group := pkg.GetGroup(groupID)
 
 	jsonResp, _ := json.Marshal(struct {
 		Type string `json:"response_type"`
 		Text string `json:"text"`
 	}{
 		Type: "in_channel",
-		Text: fmt.Sprintf(subject + orgName + assignee),
+		Text: fmt.Sprintf("Subject : %v \n Organization : %v \n Assignee : %v \n Group : %v \n Status : %v", subject, orgName, assignee, group, status),
 	})
 
 	w.Header().Add("Content-Type", "application/json")
