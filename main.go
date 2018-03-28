@@ -10,7 +10,9 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", getTicketHandler)
+	http.HandleFunc("/tickets", getTicketHandler)
+	http.HandleFunc("/orgs", getOrgTicketHandler)
+
 	log.Fatalln(http.ListenAndServe(":8080", nil))
 }
 
@@ -33,6 +35,28 @@ func getTicketHandler(w http.ResponseWriter, r *http.Request) {
 	}{
 		Type: "in_channel",
 		Text: fmt.Sprintf("Subject : %v \n Organization : %v \n Assignee : %v \n Group : %v \n Status : %v", subject, orgName, assignee, group, status),
+	})
+
+	w.Header().Add("Content-Type", "application/json")
+	fmt.Fprintf(w, string(jsonResp))
+}
+
+func getOrgTicketHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		return
+	}
+
+	//text := strings.Replace(r.FormValue("text"), "\r", "", -1)
+
+	orgTicket := pkg.GetOrgTickets()
+
+	jsonResp, _ := json.Marshal(struct {
+		Type string `json:"response_type"`
+		Text string `json:"text"`
+	}{
+		Type: "in_channel",
+		Text: fmt.Sprintf("OrgTicket : %v", orgTicket),
 	})
 
 	w.Header().Add("Content-Type", "application/json")
