@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -45,9 +46,9 @@ type MyJsonData struct {
 	} `json:"results"`
 }
 
-func GetOrgTickets() int {
+func GetOrgTickets(org string) int {
 
-	url := "https://forgerock.zendesk.com/api/v2/search.json?query=type%3Aticket%20organization%3A%22Kansas%20City%20Plant%20(NNSA)%22%20status%3Aopen%20status%3Apending"
+	url := "https://forgerock.zendesk.com/api/v2/search.json?query=" + url.QueryEscape("type:ticket organization:\""+org+"\" status:open status:pending")
 
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -69,7 +70,6 @@ func GetOrgTickets() int {
 	defer res.Body.Close()
 
 	//jsonErr := json.Unmarshal(body, &myTicket)
-
 	return myTicket.Tickets[0].AssigneeID
 
 }

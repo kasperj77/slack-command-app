@@ -47,9 +47,9 @@ func getOrgTicketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//text := strings.Replace(r.FormValue("text"), "\r", "", -1)
+	text := strings.Replace(r.FormValue("text"), "\r", "", -1)
 
-	orgTicket := pkg.GetOrgTickets()
+	orgTicket := pkg.GetOrgTickets(text)
 
 	jsonResp, _ := json.Marshal(struct {
 		Type string `json:"response_type"`
