@@ -49,14 +49,14 @@ func getOrgTicketHandler(w http.ResponseWriter, r *http.Request) {
 
 	text := strings.Replace(r.FormValue("text"), "\r", "", -1)
 
-	orgTicket := pkg.GetOrgTickets(text)
+	orgTicket, orgPriority, orgStatus := pkg.GetOrgTickets(text)
 
 	jsonResp, _ := json.Marshal(struct {
 		Type string `json:"response_type"`
 		Text string `json:"text"`
 	}{
 		Type: "in_channel",
-		Text: fmt.Sprintf("OrgTicket : %v", orgTicket),
+		Text: fmt.Sprintf("Ticket number : %v \n Ticket Priority : %v \n Ticket Status : %v", orgTicket, orgPriority, orgStatus),
 	})
 
 	w.Header().Add("Content-Type", "application/json")

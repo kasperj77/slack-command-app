@@ -2,9 +2,7 @@ package pkg
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"net/url"
 	"time"
 )
@@ -46,18 +44,11 @@ type MyJsonData struct {
 	} `json:"results"`
 }
 
-func GetOrgTickets(org string) int {
+func GetOrgTickets(org string) ([]int, []string, []string) {
 
 	url := "https://forgerock.zendesk.com/api/v2/search.json?query=" + url.QueryEscape("type:ticket organization:\""+org+"\" status:open status:pending")
 
-	req, _ := http.NewRequest("GET", url, nil)
-
-	req.Header.Add("authorization", "Basic am9yZGFuLmthc3BlckBmb3JnZXJvY2suY29tL3Rva2VuOmtja0JTREx6YWs2V2NSWEZmQkt6eldCZjBNZ1pnWHJEQWFCbk1nRGc=")
-
-	res, _ := http.DefaultClient.Do(req)
-
-	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
+	body := Init(url)
 
 	myTicket := MyJsonData{}
 
@@ -67,9 +58,28 @@ func GetOrgTickets(org string) int {
 		log.Fatal(jsonErr)
 	}
 
-	defer res.Body.Close()
+	// getting the numbers for org
+	orgTickets := make([]int, len(myTicket.Tickets))
+
+	for i := range orgTickets {
+		orgTickets[i] = myTicket.Tickets[i].ID
+	}
+
+	// getting the tickets status
+	ticketPriority := make([]string, len(myTicket.Tickets))
+
+	for i := range ticketPriority {
+		ticketPriority[i] = myTicket.Tickets[i].Priority
+	}
+
+	// getting the tickets status
+	ticketStatus := make([]string, len(myTicket.Tickets))
+
+	for i := range ticketStatus {
+		ticketStatus[i] = myTicket.Tickets[i].Status
+	}
 
 	//jsonErr := json.Unmarshal(body, &myTicket)
-	return myTicket.Tickets[0].AssigneeID
+	return orgTickets, ticketPriority, ticketStatus
 
 }

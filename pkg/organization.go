@@ -2,9 +2,7 @@ package pkg
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"strconv"
 	"time"
 )
@@ -39,13 +37,7 @@ func GetOrganization(id int) string {
 
 	url := "https://forgerock.zendesk.com/api/v2/organizations/" + strconv.Itoa(id) + ".json"
 
-	req, _ := http.NewRequest("GET", url, nil)
-
-	req.Header.Add("authorization", "Basic am9yZGFuLmthc3BlckBmb3JnZXJvY2suY29tL3Rva2VuOmtja0JTREx6YWs2V2NSWEZmQkt6eldCZjBNZ1pnWHJEQWFCbk1nRGc=")
-
-	res, _ := http.DefaultClient.Do(req)
-
-	body, _ := ioutil.ReadAll(res.Body)
+	body := Init(url)
 
 	myOrg := OrgGenerated{}
 
@@ -54,8 +46,6 @@ func GetOrganization(id int) string {
 	if jsonErr != nil {
 		log.Fatal(jsonErr)
 	}
-
-	defer res.Body.Close()
 
 	response := myOrg.Organization.Name
 
