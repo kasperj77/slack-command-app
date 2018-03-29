@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/url"
+	"strconv"
 	"time"
 )
 
@@ -44,7 +45,7 @@ type MyJsonData struct {
 	} `json:"results"`
 }
 
-func GetOrgTickets(org string) ([]int, []string, []string) {
+func GetOrgTickets(org string) ([]string, []string, []string) {
 
 	url := "https://forgerock.zendesk.com/api/v2/search.json?query=" + url.QueryEscape("type:ticket organization:\""+org+"\" status:open status:pending")
 
@@ -59,10 +60,10 @@ func GetOrgTickets(org string) ([]int, []string, []string) {
 	}
 
 	// getting the numbers for org
-	orgTickets := make([]int, len(myTicket.Tickets))
+	orgTickets := make([]string, len(myTicket.Tickets))
 
 	for i := range orgTickets {
-		orgTickets[i] = myTicket.Tickets[i].ID
+		orgTickets[i] = strconv.Itoa(myTicket.Tickets[i].ID)
 	}
 
 	// getting the tickets status

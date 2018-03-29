@@ -34,7 +34,7 @@ func getTicketHandler(w http.ResponseWriter, r *http.Request) {
 		Text string `json:"text"`
 	}{
 		Type: "in_channel",
-		Text: fmt.Sprintf("Subject : %v \n Organization : %v \n Assignee : %v \n Group : %v \n Status : %v", subject, orgName, assignee, group, status),
+		Text: fmt.Sprintf("*Subject* : %v \n *Organization* : %v \n *Assignee* : %v \n *Group* : %v \n *Status* : %v", subject, orgName, assignee, group, status),
 	})
 
 	w.Header().Add("Content-Type", "application/json")
@@ -51,12 +51,18 @@ func getOrgTicketHandler(w http.ResponseWriter, r *http.Request) {
 
 	orgTicket, orgPriority, orgStatus := pkg.GetOrgTickets(text)
 
+	organizationTicketList := make([]string, len(orgTicket))
+
+	for i := range organizationTicketList {
+		organizationTicketList[i] = orgTicket[i] + " " + orgPriority[i] + " " + orgStatus[i] + " \n"
+	}
+
 	jsonResp, _ := json.Marshal(struct {
 		Type string `json:"response_type"`
 		Text string `json:"text"`
 	}{
 		Type: "in_channel",
-		Text: fmt.Sprintf("Ticket number : %v \n Ticket Priority : %v \n Ticket Status : %v", orgTicket, orgPriority, orgStatus),
+		Text: fmt.Sprintf("%v", organizationTicketList),
 	})
 
 	w.Header().Add("Content-Type", "application/json")
